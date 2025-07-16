@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday Sakshi</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #ffecd2, #fcb69f);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
+    .riddle-box {
+      margin-top: 20vh;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 30px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      margin: 10px;
+    }
+    input {
+      width: 250px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #ff4081;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    #celebration {
+      display: none;
+      margin-top: 30px;
+      background: url('happy-birthday-letters-party-items.jpg') no-repeat center center/cover;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+    #mainMessage {
+      font-size: 48px;
+      margin: 20px;
+      color: #fff;
+      text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff;
+      position: relative;
+      z-index: 2;
+    }
+    video {
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+      margin-top: 20px;
+      z-index: 2;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <div id="riddle" class="riddle-box">
+    <h2>Solve this to reveal the surprise 🎁</h2>
+    <p>I float up high, colors bright,<br>
+    Squeeze me once, I take a flight.<br>
+    Tie me up or let me go,<br>
+    What’s this thing that loves to blow?</p>
+    <input type="text" id="answer" placeholder="Your answer here">
+    <button onclick="checkAnswer()">Submit</button>
+  </div>
+
+  <div id="celebration">
+    <div id="mainMessage">🎉 Happy Birthday Sakshi 🎉</div>
+    <video src="birthday_song.mp4" controls autoplay playsinline></video>
+  </div>
+
+  <script>
+    function checkAnswer() {
+      const ans = document.getElementById("answer").value.trim().toLowerCase();
+      if (ans === "balloon" || ans === "balloons") {
+        document.getElementById("riddle").style.display = "none";
+        document.getElementById("celebration").style.display = "block";
+      } else {
+        alert("Try again! Hint: It floats and kids love it.");
+      }
+    }
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let fireworks = [];
+
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function Firework() {
+      this.x = random(0, canvas.width);
+      this.y = canvas.height;
+      this.radius = 2;
+      this.speed = random(2, 4);
+      this.angle = Math.PI * 2 * Math.random();
+      this.vx = Math.cos(this.angle) * this.speed;
+      this.vy = Math.sin(this.angle) * this.speed;
+      this.alpha = 1;
+      this.color = "hsl(" + Math.floor(random(0, 360)) + ", 100%, 60%)";
+    }
+
+    Firework.prototype.update = function() {
+      this.vy -= 0.05;
+      this.x += this.vx;
+      this.y += this.vy;
+      this.alpha -= 0.01;
+    };
+
+    Firework.prototype.draw = function() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = this.alpha;
+      ctx.fill();
+    };
+
+    function animate() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (Math.random() < 0.1) fireworks.push(new Firework());
+      fireworks.forEach((fw, i) => {
+        fw.update();
+        fw.draw();
+        if (fw.alpha <= 0) fireworks.splice(i, 1);
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
